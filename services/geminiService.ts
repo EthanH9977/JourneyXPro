@@ -1,6 +1,6 @@
 
 import { GoogleGenAI } from "@google/genai";
-import { TripDetails, ItineraryResponse, TripPlan } from '../types';
+import { TripDetails, ItineraryResponse, TripPlan, GroundingChunk } from '../types';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
@@ -86,9 +86,13 @@ export const generateItinerary = async (details: TripDetails): Promise<Itinerary
 
     const plan = JSON.parse(jsonText) as TripPlan;
     
+    // Cast to any to bypass strict type checks between SDK and local interface during build
+    const rawChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
+    const groundingChunks = rawChunks as unknown as GroundingChunk[];
+
     return {
       plan: plan,
-      groundingChunks: response.candidates?.[0]?.groundingMetadata?.groundingChunks || []
+      groundingChunks: groundingChunks || []
     };
 
   } catch (error) {

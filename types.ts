@@ -11,8 +11,8 @@ export interface TripDetails {
 
 export interface GroundingChunk {
   web?: {
-    uri: string;
-    title: string;
+    uri?: string;
+    title?: string;
   };
 }
 

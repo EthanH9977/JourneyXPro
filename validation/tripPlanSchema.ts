@@ -46,7 +46,9 @@ export type TripPlanParsed = z.infer<typeof TripPlanSchema> & TripPlan;
 export const parseTripPlan = (raw: unknown): TripPlan => {
   const parsed = TripPlanSchema.safeParse(raw);
   if (!parsed.success) {
-    const message = parsed.error.errors.map(err => `${err.path.join('.')} ${err.message}`).join('; ');
+    const message = parsed.error.issues
+      .map(issue => `${issue.path.join('.')} ${issue.message}`)
+      .join('; ');
     throw new Error(`行程資料格式驗證失敗：${message}`);
   }
   return parsed.data;

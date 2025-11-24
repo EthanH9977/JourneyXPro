@@ -6,10 +6,5 @@ export default defineConfig({
   plugins: [react()],
   define: {
     'process.env.API_KEY': JSON.stringify(process.env.API_KEY)
-  },
-  test: {
-    environment: 'jsdom',
-    setupFiles: './vitest.setup.ts',
-    globals: true
   }
 });

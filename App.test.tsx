@@ -1,6 +1,6 @@
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi, Mock } from 'vitest';
 import App from './App';
 import { generateItinerary } from './services/geminiService';
 import { TripPlan } from './types';

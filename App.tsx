@@ -1,97 +1,35 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import JourneyForm from './components/JourneyForm';
 import ItineraryDisplay from './components/ItineraryDisplay';
 import SavedItineraries from './components/SavedItineraries';
-import { TripDetails, GroundingChunk, TripPlan, SavedTrip } from './types';
-import { generateItinerary } from './services/geminiService';
+import AdjustmentDialog from './components/AdjustmentDialog';
+import { useTripPlanner } from './hooks/useTripPlanner';
 import { Plane, Map as MapIcon, Compass, History } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [currentTripDetails, setCurrentTripDetails] = useState<TripDetails | null>(null);
-  
-  // Changed from string to TripPlan object
-  const [tripPlan, setTripPlan] = useState<TripPlan | null>(null);
-  const [groundingChunks, setGroundingChunks] = useState<GroundingChunk[]>([]);
-  
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  
-  // History State
-  const [savedTrips, setSavedTrips] = useState<SavedTrip[]>([]);
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [isCurrentSaved, setIsCurrentSaved] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('journeyx_trips');
-    if (saved) {
-      try {
-        setSavedTrips(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse saved trips", e);
-      }
-    }
-  }, []);
-
-  const handleFormSubmit = async (details: TripDetails) => {
-    setLoading(true);
-    setError(null);
-    setTripPlan(null);
-    setIsCurrentSaved(false);
-    setCurrentTripDetails(details);
-    
-    try {
-      const response = await generateItinerary(details);
-      setTripPlan(response.plan);
-      setGroundingChunks(response.groundingChunks || []);
-    } catch (err: any) {
-      console.error(err);
-      setError("無法產生行程。請確認您的請求內容或稍後再試。");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSaveTrip = () => {
-    if (!tripPlan || !currentTripDetails) return;
-    
-    const newTrip: SavedTrip = {
-      id: Date.now().toString(),
-      timestamp: Date.now(),
-      details: currentTripDetails,
-      response: {
-        plan: tripPlan,
-        groundingChunks
-      }
-    };
-
-    const updatedTrips = [newTrip, ...savedTrips];
-    setSavedTrips(updatedTrips);
-    localStorage.setItem('journeyx_trips', JSON.stringify(updatedTrips));
-    setIsCurrentSaved(true);
-  };
-
-  const handleDeleteTrip = (id: string) => {
-    const updatedTrips = savedTrips.filter(t => t.id !== id);
-    setSavedTrips(updatedTrips);
-    localStorage.setItem('journeyx_trips', JSON.stringify(updatedTrips));
-  };
-
-  const handleSelectSavedTrip = (trip: SavedTrip) => {
-    setCurrentTripDetails(trip.details);
-    setTripPlan(trip.response.plan);
-    setGroundingChunks(trip.response.groundingChunks || []);
-    setIsHistoryOpen(false);
-    setIsCurrentSaved(true);
-  };
-
-  const handleReset = () => {
-    setTripPlan(null);
-    setGroundingChunks([]);
-    setError(null);
-    setCurrentTripDetails(null);
-    setIsCurrentSaved(false);
-  };
+  const {
+    tripPlan,
+    groundingChunks,
+    loading,
+    adjustmentLoading,
+    error,
+    savedTrips,
+    isHistoryOpen,
+    isCurrentSaved,
+    isAdjustmentOpen,
+    adjustmentError,
+    submitTrip,
+    saveTrip,
+    deleteTrip,
+    selectTrip,
+    resetTrip,
+    openHistory,
+    closeHistory,
+    openAdjustmentDialog,
+    closeAdjustmentDialog,
+    adjustTripPlan
+  } = useTripPlanner();
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans overflow-x-hidden">
@@ -100,7 +38,7 @@ const App: React.FC = () => {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={handleReset}>
+            <div className="flex items-center gap-2 cursor-pointer" onClick={resetTrip}>
               <div className="w-8 h-8 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-indigo-200">
                 <Compass className="w-5 h-5" />
               </div>
@@ -110,8 +48,8 @@ const App: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-4">
-               <button 
-                onClick={() => setIsHistoryOpen(true)}
+              <button 
+                onClick={openHistory}
                 className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-indigo-600 px-3 py-2 rounded-lg hover:bg-slate-50 transition-all"
                >
                  <History className="w-4 h-4" />
@@ -125,10 +63,10 @@ const App: React.FC = () => {
       {/* History Sidebar */}
       <SavedItineraries 
         isOpen={isHistoryOpen} 
-        onClose={() => setIsHistoryOpen(false)} 
+        onClose={closeHistory} 
         savedTrips={savedTrips}
-        onSelectTrip={handleSelectSavedTrip}
-        onDeleteTrip={handleDeleteTrip}
+        onSelectTrip={selectTrip}
+        onDeleteTrip={deleteTrip}
       />
 
       {/* Main Content */}
@@ -152,7 +90,7 @@ const App: React.FC = () => {
                  </p>
               </div>
               
-              <JourneyForm onSubmit={handleFormSubmit} isLoading={loading} />
+              <JourneyForm onSubmit={submitTrip} isLoading={loading} />
               
               {/* Features Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 max-w-5xl text-center px-4">
@@ -183,9 +121,11 @@ const App: React.FC = () => {
           <ItineraryDisplay 
             plan={tripPlan} 
             groundingChunks={groundingChunks}
-            onReset={handleReset} 
-            onSave={handleSaveTrip}
+            onReset={resetTrip} 
+            onSave={saveTrip}
             isSaved={isCurrentSaved}
+            onAdjust={openAdjustmentDialog}
+            isAdjusting={adjustmentLoading}
           />
         )}
       </main>
@@ -193,6 +133,13 @@ const App: React.FC = () => {
       <footer className="bg-white border-t border-slate-200 py-8 text-center text-slate-500 text-sm">
         <p>© {new Date().getFullYear()} JourneyX Pro. 由 Google Gemini 技術提供。</p>
       </footer>
+      <AdjustmentDialog
+        isOpen={isAdjustmentOpen}
+        onClose={closeAdjustmentDialog}
+        onSubmit={adjustTripPlan}
+        isSubmitting={adjustmentLoading}
+        error={adjustmentError}
+      />
     </div>
   );
 };

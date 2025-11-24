@@ -53,6 +53,7 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
               value={formData.destination}
               onChange={handleChange}
               placeholder="例如：日本京都"
+              aria-label="目的地"
               className={inputClasses}
             />
           </div>
@@ -68,6 +69,7 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleChange}
+                aria-label="出發日期"
                 className={`${inputClasses} text-sm`}
                 />
                 <span className="self-center text-slate-400">-</span>
@@ -77,6 +79,7 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
                 name="endDate"
                 value={formData.endDate}
                 onChange={handleChange}
+                aria-label="結束日期"
                 className={`${inputClasses} text-sm`}
                 />
             </div>
@@ -95,6 +98,7 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
                 value={formData.members}
                 onChange={handleChange}
                 placeholder="例如：2位成人，1位小孩(5歲)"
+                aria-label="旅客人數/成員"
                 className={inputClasses}
                 />
             </div>
@@ -107,6 +111,7 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
                 value={formData.accommodation}
                 onChange={handleChange}
                 placeholder="例如：住在京都車站附近"
+                aria-label="住宿地點"
                 className={inputClasses}
                 />
             </div>
@@ -122,6 +127,7 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
             value={formData.mustVisit}
             onChange={handleChange}
             placeholder="例如：清水寺、嵐山竹林、正宗懷石料理"
+            aria-label="必去清單"
             rows={3}
             className={`${inputClasses} resize-none`}
           />
@@ -137,6 +143,7 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
             value={formData.preferences}
             onChange={handleChange}
             placeholder="例如：步調輕鬆，對歷史和攝影感興趣。預算：每人每天 3000 台幣。"
+            aria-label="偏好與預算"
             rows={2}
             className={`${inputClasses} resize-none`}
           />

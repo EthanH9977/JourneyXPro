@@ -1,10 +1,14 @@
 
 import { GoogleGenAI } from "@google/genai";
-import { TripDetails, ItineraryResponse, TripPlan, GroundingChunk } from '../types';
+import { TripDetails, ItineraryResponse, GroundingChunk } from '../types';
+import { parseTripPlan } from '../validation/tripPlanSchema';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-export const generateItinerary = async (details: TripDetails): Promise<ItineraryResponse> => {
+export const generateItinerary = async (
+  details: TripDetails,
+  adjustments?: string
+): Promise<ItineraryResponse> => {
   try {
     const prompt = `
     Role: You are 'JourneyX Pro', an expert local travel planner.
@@ -15,6 +19,7 @@ export const generateItinerary = async (details: TripDetails): Promise<Itinerary
     Must Visit: ${details.mustVisit}.
     Accommodation: ${details.accommodation}.
     Preferences: ${details.preferences}.
+    User Feedback/Adjustments: ${adjustments || '無'}.
 
     Requirements:
     1. **Hyper-Localization**: Recommend local gems, verify restaurants.
@@ -84,7 +89,13 @@ export const generateItinerary = async (details: TripDetails): Promise<Itinerary
     if (jsonText.startsWith('`')) jsonText = jsonText.slice(1);
     if (jsonText.endsWith('`')) jsonText = jsonText.slice(0, -1);
 
-    const plan = JSON.parse(jsonText) as TripPlan;
+    let parsedJson: unknown;
+    try {
+      parsedJson = JSON.parse(jsonText);
+    } catch (parseErr) {
+      throw new Error('AI 回傳內容無法解析為 JSON，請稍後再試。');
+    }
+    const plan = parseTripPlan(parsedJson);
     
     // Cast to any to bypass strict type checks between SDK and local interface during build
     const rawChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
@@ -97,6 +108,9 @@ export const generateItinerary = async (details: TripDetails): Promise<Itinerary
 
   } catch (error) {
     console.error("Gemini API Error:", error);
-    throw error;
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('產生行程失敗，請稍後再試。');
   }
 };

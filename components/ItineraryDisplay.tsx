@@ -7,7 +7,7 @@ import {
   Map as MapIcon, FileText, Save, Download, Calendar, 
   MapPin, Coffee, Train, DollarSign, Lightbulb, 
   Umbrella, Navigation, Utensils, ShoppingBag, Camera, Leaf, Landmark, Building2, Palmtree,
-  Waves, Mountain, Sparkles
+  Waves, Mountain, Sparkles, SlidersHorizontal
 } from 'lucide-react';
 
 interface Props {
@@ -16,6 +16,8 @@ interface Props {
   onReset: () => void;
   onSave: () => void;
   isSaved?: boolean;
+  onAdjust?: () => void;
+  isAdjusting?: boolean;
 }
 
 // SVG Patterns (Base64 encoded for portability)
@@ -109,7 +111,15 @@ const getTheme = (vibe: VisualVibe) => {
   }
 };
 
-const ItineraryDisplay: React.FC<Props> = ({ plan, groundingChunks, onReset, onSave, isSaved }) => {
+const ItineraryDisplay: React.FC<Props> = ({
+  plan,
+  groundingChunks,
+  onReset,
+  onSave,
+  isSaved,
+  onAdjust,
+  isAdjusting
+}) => {
   const [viewMode, setViewMode] = useState<'itinerary' | 'map'>('itinerary');
   const theme = getTheme(plan.visualVibe || 'modern');
 
@@ -227,6 +237,25 @@ const ItineraryDisplay: React.FC<Props> = ({ plan, groundingChunks, onReset, onS
                     <Download className="w-4 h-4" />
                     PDF
                 </button>
+                {onAdjust && (
+                  <button
+                    onClick={onAdjust}
+                    disabled={isAdjusting}
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-lg hover:bg-indigo-100 transition-all shadow-sm disabled:opacity-70"
+                  >
+                    {isAdjusting ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        調整中
+                      </>
+                    ) : (
+                      <>
+                        <SlidersHorizontal className="w-4 h-4" />
+                        調整
+                      </>
+                    )}
+                  </button>
+                )}
                 <button
                     onClick={onReset}
                     className={`flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg hover:opacity-90 transition-all shadow-sm ${theme.button}`}

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { generateItinerary } from '../services/geminiService';
+import { uploadTravelBook } from '../services/firebaseSyncService';
+import { tripPlanToTravelBook } from '../utils/tripPlanTransform';
 import { GroundingChunk, SavedTrip, TripDetails, TripPlan } from '../types';
 
 const STORAGE_KEY = 'journeyx_trips';
@@ -17,6 +19,10 @@ export const useTripPlanner = () => {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isCurrentSaved, setIsCurrentSaved] = useState(false);
   const [isAdjustmentOpen, setIsAdjustmentOpen] = useState(false);
+  const [isSyncDialogOpen, setIsSyncDialogOpen] = useState(false);
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -153,6 +159,46 @@ export const useTripPlanner = () => {
     setIsAdjustmentOpen(true);
   }, []);
 
+  const openSyncDialog = useCallback(() => {
+    setSyncError(null);
+    setSyncSuccessMessage(null);
+    setIsSyncDialogOpen(true);
+  }, []);
+
+  const closeSyncDialog = useCallback(() => {
+    setIsSyncDialogOpen(false);
+  }, []);
+
+  const syncTripPlanToBook = useCallback(
+    async ({ username, bookTitle }: { username: string; bookTitle: string }) => {
+      if (!tripPlan || !currentTripDetails) {
+        setSyncError('目前沒有可同步的行程，請先產生新的旅遊計畫。');
+        return;
+      }
+      setSyncLoading(true);
+      setSyncError(null);
+      setSyncSuccessMessage(null);
+      try {
+        const itinerary = tripPlanToTravelBook(tripPlan);
+        const result = await uploadTravelBook({
+          username,
+          bookTitle,
+          itinerary,
+          plan: tripPlan,
+          details: currentTripDetails
+        });
+        setSyncSuccessMessage(`已同步：${username}/${result.fileName}`);
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : '同步失敗，請稍後再試。';
+        setSyncError(message);
+      } finally {
+        setSyncLoading(false);
+      }
+    },
+    [tripPlan, currentTripDetails]
+  );
+
   return {
     currentTripDetails,
     tripPlan,
@@ -161,10 +207,14 @@ export const useTripPlanner = () => {
     adjustmentLoading,
     error,
     adjustmentError,
+    syncError,
+    syncLoading,
+    syncSuccessMessage,
     savedTrips,
     isHistoryOpen,
     isCurrentSaved,
     isAdjustmentOpen,
+    isSyncDialogOpen,
     submitTrip,
     saveTrip,
     deleteTrip,
@@ -174,7 +224,10 @@ export const useTripPlanner = () => {
     closeHistory: () => setIsHistoryOpen(false),
     openAdjustmentDialog,
     closeAdjustmentDialog: () => setIsAdjustmentOpen(false),
-    adjustTripPlan
+    adjustTripPlan,
+    openSyncDialog,
+    closeSyncDialog,
+    syncTripPlanToBook
   };
 };
 

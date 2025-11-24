@@ -4,11 +4,13 @@ import JourneyForm from './components/JourneyForm';
 import ItineraryDisplay from './components/ItineraryDisplay';
 import SavedItineraries from './components/SavedItineraries';
 import AdjustmentDialog from './components/AdjustmentDialog';
+import SyncToBookDialog from './components/SyncToBookDialog';
 import { useTripPlanner } from './hooks/useTripPlanner';
 import { Plane, Map as MapIcon, Compass, History } from 'lucide-react';
 
 const App: React.FC = () => {
   const {
+    currentTripDetails,
     tripPlan,
     groundingChunks,
     loading,
@@ -19,6 +21,10 @@ const App: React.FC = () => {
     isCurrentSaved,
     isAdjustmentOpen,
     adjustmentError,
+    isSyncDialogOpen,
+    syncLoading,
+    syncError,
+    syncSuccessMessage,
     submitTrip,
     saveTrip,
     deleteTrip,
@@ -28,7 +34,10 @@ const App: React.FC = () => {
     closeHistory,
     openAdjustmentDialog,
     closeAdjustmentDialog,
-    adjustTripPlan
+    adjustTripPlan,
+    openSyncDialog,
+    closeSyncDialog,
+    syncTripPlanToBook
   } = useTripPlanner();
 
   return (
@@ -126,6 +135,8 @@ const App: React.FC = () => {
             isSaved={isCurrentSaved}
             onAdjust={openAdjustmentDialog}
             isAdjusting={adjustmentLoading}
+            onSync={openSyncDialog}
+            isSyncingToBook={syncLoading}
           />
         )}
       </main>
@@ -139,6 +150,15 @@ const App: React.FC = () => {
         onSubmit={adjustTripPlan}
         isSubmitting={adjustmentLoading}
         error={adjustmentError}
+      />
+      <SyncToBookDialog
+        isOpen={isSyncDialogOpen}
+        onClose={closeSyncDialog}
+        onSubmit={syncTripPlanToBook}
+        isSubmitting={syncLoading}
+        error={syncError}
+        successMessage={syncSuccessMessage}
+        defaultBookTitle={tripPlan?.tripTitle}
       />
     </div>
   );

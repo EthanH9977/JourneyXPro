@@ -7,7 +7,7 @@ import {
   Map as MapIcon, FileText, Save, Download, Calendar, 
   MapPin, Coffee, Train, DollarSign, Lightbulb, 
   Umbrella, Navigation, Utensils, ShoppingBag, Camera, Leaf, Landmark, Building2, Palmtree,
-  Waves, Mountain, Sparkles, SlidersHorizontal
+  Waves, Mountain, Sparkles, SlidersHorizontal, Share2
 } from 'lucide-react';
 
 interface Props {
@@ -18,6 +18,8 @@ interface Props {
   isSaved?: boolean;
   onAdjust?: () => void;
   isAdjusting?: boolean;
+  onSync?: () => void;
+  isSyncingToBook?: boolean;
 }
 
 // SVG Patterns (Base64 encoded for portability)
@@ -118,7 +120,9 @@ const ItineraryDisplay: React.FC<Props> = ({
   onSave,
   isSaved,
   onAdjust,
-  isAdjusting
+  isAdjusting,
+  onSync,
+  isSyncingToBook
 }) => {
   const [viewMode, setViewMode] = useState<'itinerary' | 'map'>('itinerary');
   const theme = getTheme(plan.visualVibe || 'modern');
@@ -237,6 +241,25 @@ const ItineraryDisplay: React.FC<Props> = ({
                     <Download className="w-4 h-4" />
                     PDF
                 </button>
+                {onSync && (
+                  <button
+                    onClick={onSync}
+                    disabled={isSyncingToBook}
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 transition-all shadow-sm disabled:opacity-70"
+                  >
+                    {isSyncingToBook ? (
+                      <>
+                        <Share2 className="w-4 h-4 animate-pulse" />
+                        同步中
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-4 h-4" />
+                        旅遊書
+                      </>
+                    )}
+                  </button>
+                )}
                 {onAdjust && (
                   <button
                     onClick={onAdjust}

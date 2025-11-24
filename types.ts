@@ -71,3 +71,38 @@ export interface SavedTrip {
   details: TripDetails;
   response: ItineraryResponse;
 }
+
+export type TravelBookEventType =
+  | 'FLIGHT'
+  | 'TRAIN'
+  | 'BUS'
+  | 'HOTEL'
+  | 'SIGHTSEEING'
+  | 'FOOD'
+  | 'SHOPPING'
+  | 'WALKING';
+
+export interface TravelBookDetail {
+  title: string;
+  content: string;
+}
+
+export interface TravelBookItem {
+  id: string;
+  time: string;
+  endTime?: string;
+  title: string;
+  locationName: string;
+  locationUrl?: string;
+  type: TravelBookEventType;
+  description: string;
+  details?: TravelBookDetail[];
+}
+
+export interface TravelBookDay {
+  dayId: number;
+  dateStr: string;
+  displayDate: string;
+  region: string;
+  events: TravelBookItem[];
+}

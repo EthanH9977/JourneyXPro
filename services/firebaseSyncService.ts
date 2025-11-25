@@ -12,6 +12,17 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
+// Debug logging
+console.log('Firebase Config Check:', {
+  hasApiKey: !!firebaseConfig.apiKey,
+  projectId: firebaseConfig.projectId,
+  authDomain: firebaseConfig.authDomain
+});
+
+if (!firebaseConfig.apiKey) {
+  console.error('Firebase API Key is missing! Check VITE_FIREBASE_API_KEY.');
+}
+
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 

@@ -201,9 +201,22 @@ export const useTripPlanner = () => {
           window.open(link, '_blank', 'noopener');
         }, 1500);
 
-      } catch (err) {
-        const message =
-          err instanceof Error ? err.message : '同步失敗，請稍後再試。';
+      } catch (err: any) {
+        console.error('Sync error details:', err);
+        let message = '同步失敗，請稍後再試。';
+
+        if (err instanceof Error) {
+          message = err.message;
+          // Add specific hints for common errors
+          if (message.includes('permission-denied')) {
+            message = '權限不足：請檢查 Firebase 安全規則 (Firestore Rules)。';
+          } else if (message.includes('unavailable') || message.includes('network')) {
+            message = '網路連線問題：無法連接到 Firebase。';
+          } else if (message.includes('API Key')) {
+            message = '配置錯誤：Firebase API Key 無效或遺失。';
+          }
+        }
+
         setSyncError(message);
       } finally {
         setSyncLoading(false);

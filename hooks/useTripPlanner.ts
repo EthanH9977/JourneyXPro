@@ -5,8 +5,8 @@ import { tripPlanToTravelBook } from '../utils/tripPlanTransform';
 import { GroundingChunk, SavedTrip, TripDetails, TripPlan } from '../types';
 
 const STORAGE_KEY = 'journeyx_trips';
-const SHIKOKU_APP_URL =
-  import.meta.env.VITE_SHIKOKU_URL || 'https://shikoku.vercel.app';
+const JOURNEYXBOOK_APP_URL =
+  import.meta.env.VITE_JOURNEYXBOOK_URL || 'https://journeyxbook.vercel.app';
 
 export const useTripPlanner = () => {
   const [currentTripDetails, setCurrentTripDetails] = useState<TripDetails | null>(null);
@@ -190,7 +190,7 @@ export const useTripPlanner = () => {
           plan: tripPlan,
           details: currentTripDetails
         });
-        const link = `${SHIKOKU_APP_URL}?user=${encodeURIComponent(
+        const link = `${JOURNEYXBOOK_APP_URL}?user=${encodeURIComponent(
           username
         )}&file=${encodeURIComponent(result.fileId)}`;
         setLastSyncedLink(link);

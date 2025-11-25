@@ -3,7 +3,13 @@ import { GoogleGenAI } from "@google/genai";
 import { TripDetails, ItineraryResponse, GroundingChunk } from '../types';
 import { parseTripPlan } from '../validation/tripPlanSchema';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+if (!apiKey) {
+  console.error('❌ VITE_GEMINI_API_KEY 未設定，請在 Vercel 環境變數中設定您的 Gemini API key');
+}
+
+const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
 export const generateItinerary = async (
   details: TripDetails,
@@ -96,7 +102,7 @@ export const generateItinerary = async (
       throw new Error('AI 回傳內容無法解析為 JSON，請稍後再試。');
     }
     const plan = parseTripPlan(parsedJson);
-    
+
     // Cast to any to bypass strict type checks between SDK and local interface during build
     const rawChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
     const groundingChunks = rawChunks as unknown as GroundingChunk[];

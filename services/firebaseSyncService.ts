@@ -90,6 +90,12 @@ export const uploadTravelBook = async ({ username, bookTitle, itinerary, plan, d
     tripTitle: plan.tripTitle
   });
 
+  console.log('Syncing to Firestore:', {
+    path: `users/${trimmedUser}/itineraries/${fileId}`,
+    data: safeItinerary,
+    metadata: safeMetadata
+  });
+
   await Promise.race([
     setDoc(docRef, {
       data: safeItinerary,

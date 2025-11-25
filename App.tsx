@@ -144,6 +144,7 @@ const App: React.FC = () => {
             isAdjusting={adjustmentLoading}
             onSync={openSyncDialog}
             isSyncingToBook={syncLoading}
+            journeyxBookLink={lastSyncedLink}
           />
         )}
       </main>

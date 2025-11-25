@@ -38,7 +38,7 @@ const App: React.FC = () => {
     openSyncDialog,
     closeSyncDialog,
     syncTripPlanToBook,
-    syncTripPlanToBook,
+
     openLastSyncedBook,
     loadTestPlan
   } = useTripPlanner();

@@ -43,6 +43,24 @@ interface SyncPayload {
   details?: TripDetails | null;
 }
 
+const sanitizeData = (data: any): any => {
+  if (data === undefined) return null;
+  if (data === null) return null;
+  if (Array.isArray(data)) {
+    return data.map(item => sanitizeData(item));
+  }
+  if (typeof data === 'object' && !(data instanceof Date)) {
+    const result: any = {};
+    for (const key in data) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        result[key] = sanitizeData(data[key]);
+      }
+    }
+    return result;
+  }
+  return data;
+};
+
 export const uploadTravelBook = async ({ username, bookTitle, itinerary, plan, details }: SyncPayload) => {
   const trimmedUser = username.trim();
   if (!trimmedUser) {
@@ -58,19 +76,24 @@ export const uploadTravelBook = async ({ username, bookTitle, itinerary, plan, d
     setTimeout(() => reject(new Error('同步請求逾時，請檢查網路連線')), 30000)
   );
 
+  // Sanitize all data before sending to Firestore
+  // Firestore does not support 'undefined', so we convert them to null
+  const safeItinerary = sanitizeData(itinerary);
+  const safeMetadata = sanitizeData({
+    title: finalTitle,
+    destination: plan.destination,
+    duration: plan.duration,
+    totalBudgetEstimate: plan.totalBudgetEstimate,
+    members: details?.members,
+    preferences: details?.preferences,
+    syncedFrom: 'JourneyXPro',
+    tripTitle: plan.tripTitle
+  });
+
   await Promise.race([
     setDoc(docRef, {
-      data: itinerary,
-      metadata: {
-        title: finalTitle,
-        destination: plan.destination,
-        duration: plan.duration,
-        totalBudgetEstimate: plan.totalBudgetEstimate,
-        members: details?.members,
-        preferences: details?.preferences,
-        syncedFrom: 'JourneyXPro',
-        tripTitle: plan.tripTitle
-      },
+      data: safeItinerary,
+      metadata: safeMetadata,
       updatedAt: new Date().toISOString()
     }),
     timeoutPromise

@@ -194,8 +194,13 @@ export const useTripPlanner = () => {
           username
         )}&file=${encodeURIComponent(result.fileId)}`;
         setLastSyncedLink(link);
-        setSyncSuccessMessage(`已同步：${username}/${result.fileName}`);
-        window.open(link, '_blank', 'noopener');
+        setSyncSuccessMessage(`成功同步！您的行程 ID 為：${result.fileId}`);
+
+        // Auto open the book site
+        setTimeout(() => {
+          window.open(link, '_blank', 'noopener');
+        }, 1500);
+
       } catch (err) {
         const message =
           err instanceof Error ? err.message : '同步失敗，請稍後再試。';

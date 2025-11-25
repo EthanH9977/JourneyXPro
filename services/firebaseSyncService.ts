@@ -44,7 +44,7 @@ export const uploadTravelBook = async ({ username, bookTitle, itinerary, plan, d
   const docRef = doc(db, 'users', trimmedUser, 'itineraries', fileId);
 
   const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('同步請求逾時，請檢查網路連線')), 15000)
+    setTimeout(() => reject(new Error('同步請求逾時，請檢查網路連線')), 30000)
   );
 
   await Promise.race([

@@ -1,5 +1,6 @@
+
 import React, { useEffect, useState } from 'react';
-import { BookCopy, UserCircle2 } from 'lucide-react';
+import { BookCopy, UserCircle2, CheckCircle, ExternalLink } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -65,16 +66,20 @@ const SyncToBookDialog: React.FC<Props> = ({
         )}
 
         {successMessage && (
-          <div className="flex flex-col gap-3 text-sm text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg p-3">
-            <span>{successMessage}</span>
+          <div className="p-4 bg-green-50 text-green-700 rounded-lg text-sm flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <CheckCircle size={16} />
+              {successMessage}
+            </div>
             {journeyxBookLink && (
-              <button
-                type="button"
-                onClick={onOpenJourneyXBook}
-                className="self-start px-3 py-1.5 text-xs font-semibold rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+              <a
+                href={journeyxBookLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 self-start px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-full hover:bg-green-700 transition-colors flex items-center gap-1"
               >
-                開啟旅遊書
-              </button>
+                立即開啟 JourneyXBook <ExternalLink size={12} />
+              </a>
             )}
           </div>
         )}

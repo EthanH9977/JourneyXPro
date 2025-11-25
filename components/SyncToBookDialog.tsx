@@ -9,8 +9,8 @@ interface Props {
   error?: string | null;
   successMessage?: string | null;
   defaultBookTitle?: string;
-  shikokuLink?: string | null;
-  onOpenShikoku?: () => void;
+  journeyxBookLink?: string | null;
+  onOpenJourneyXBook?: () => void;
 }
 
 const SyncToBookDialog: React.FC<Props> = ({
@@ -21,8 +21,8 @@ const SyncToBookDialog: React.FC<Props> = ({
   error,
   successMessage,
   defaultBookTitle,
-  shikokuLink,
-  onOpenShikoku
+  journeyxBookLink,
+  onOpenJourneyXBook
 }) => {
   const [username, setUsername] = useState('');
   const [bookTitle, setBookTitle] = useState('');
@@ -53,8 +53,8 @@ const SyncToBookDialog: React.FC<Props> = ({
             <BookCopy className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-900">送到 Shikoku 旅遊書</h2>
-            <p className="text-sm text-slate-500">輸入使用者名稱與旅遊書標題，即可同步到 Shikoku 雲端。</p>
+            <h2 className="text-xl font-bold text-slate-900">送到 JourneyXBook 旅遊書</h2>
+            <p className="text-sm text-slate-500">輸入使用者名稱與旅遊書標題，即可同步到 JourneyXBook 雲端。</p>
           </div>
         </header>
 
@@ -67,10 +67,10 @@ const SyncToBookDialog: React.FC<Props> = ({
         {successMessage && (
           <div className="flex flex-col gap-3 text-sm text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg p-3">
             <span>{successMessage}</span>
-            {shikokuLink && (
+            {journeyxBookLink && (
               <button
                 type="button"
-                onClick={onOpenShikoku}
+                onClick={onOpenJourneyXBook}
                 className="self-start px-3 py-1.5 text-xs font-semibold rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
               >
                 開啟旅遊書

@@ -43,20 +43,27 @@ export const uploadTravelBook = async ({ username, bookTitle, itinerary, plan, d
 
   const docRef = doc(db, 'users', trimmedUser, 'itineraries', fileId);
 
-  await setDoc(docRef, {
-    data: itinerary,
-    metadata: {
-      title: finalTitle,
-      destination: plan.destination,
-      duration: plan.duration,
-      totalBudgetEstimate: plan.totalBudgetEstimate,
-      members: details?.members,
-      preferences: details?.preferences,
-      syncedFrom: 'JourneyXPro',
-      tripTitle: plan.tripTitle
-    },
-    updatedAt: new Date().toISOString()
-  });
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('同步請求逾時，請檢查網路連線')), 15000)
+  );
+
+  await Promise.race([
+    setDoc(docRef, {
+      data: itinerary,
+      metadata: {
+        title: finalTitle,
+        destination: plan.destination,
+        duration: plan.duration,
+        totalBudgetEstimate: plan.totalBudgetEstimate,
+        members: details?.members,
+        preferences: details?.preferences,
+        syncedFrom: 'JourneyXPro',
+        tripTitle: plan.tripTitle
+      },
+      updatedAt: new Date().toISOString()
+    }),
+    timeoutPromise
+  ]);
 
   return {
     fileId,

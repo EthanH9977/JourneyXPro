@@ -38,7 +38,9 @@ const App: React.FC = () => {
     openSyncDialog,
     closeSyncDialog,
     syncTripPlanToBook,
-    openLastSyncedBook
+    syncTripPlanToBook,
+    openLastSyncedBook,
+    loadTestPlan
   } = useTripPlanner();
 
   return (
@@ -100,7 +102,11 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            <JourneyForm onSubmit={submitTrip} isLoading={loading} />
+            <JourneyForm
+              onSubmit={submitTrip}
+              isLoading={loading}
+              onLoadTest={loadTestPlan}
+            />
 
             {/* Features Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 max-w-5xl text-center px-4">

@@ -5,9 +5,10 @@ import { MapPin, Calendar, Users, Heart, Home, Settings, Search } from 'lucide-r
 interface Props {
   onSubmit: (details: TripDetails) => void;
   isLoading: boolean;
+  onLoadTest: () => void;
 }
 
-const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
+const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading, onLoadTest }) => {
   const [formData, setFormData] = useState<TripDetails>({
     destination: '',
     startDate: '',
@@ -34,13 +35,13 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
     <div className="w-full max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
       <div className="bg-indigo-600 p-6 text-white">
         <h2 className="text-2xl font-bold flex items-center gap-2">
-           <MapPin className="w-6 h-6" /> 開始您的旅程
+          <MapPin className="w-6 h-6" /> 開始您的旅程
         </h2>
         <p className="text-indigo-100 mt-2">提供您的旅行詳情，JourneyX Pro 將為您量身打造完美行程。</p>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="p-8 space-y-6">
-        
+
         {/* Destination & Dates */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
@@ -63,7 +64,7 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
               <Calendar className="w-4 h-4 text-indigo-500" /> 日期
             </label>
             <div className="flex gap-2">
-                <input
+              <input
                 required
                 type="date"
                 name="startDate"
@@ -71,9 +72,9 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
                 onChange={handleChange}
                 aria-label="出發日期"
                 className={`${inputClasses} text-sm`}
-                />
-                <span className="self-center text-slate-400">-</span>
-                <input
+              />
+              <span className="self-center text-slate-400">-</span>
+              <input
                 required
                 type="date"
                 name="endDate"
@@ -81,40 +82,40 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
                 onChange={handleChange}
                 aria-label="結束日期"
                 className={`${inputClasses} text-sm`}
-                />
+              />
             </div>
           </div>
         </div>
 
         {/* Members & Accommodation */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <Users className="w-4 h-4 text-indigo-500" /> 旅客人數/成員
-                </label>
-                <input
-                required
-                name="members"
-                value={formData.members}
-                onChange={handleChange}
-                placeholder="例如：2位成人，1位小孩(5歲)"
-                aria-label="旅客人數/成員"
-                className={inputClasses}
-                />
-            </div>
-            <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <Home className="w-4 h-4 text-indigo-500" /> 住宿地點
-                </label>
-                <input
-                name="accommodation"
-                value={formData.accommodation}
-                onChange={handleChange}
-                placeholder="例如：住在京都車站附近"
-                aria-label="住宿地點"
-                className={inputClasses}
-                />
-            </div>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <Users className="w-4 h-4 text-indigo-500" /> 旅客人數/成員
+            </label>
+            <input
+              required
+              name="members"
+              value={formData.members}
+              onChange={handleChange}
+              placeholder="例如：2位成人，1位小孩(5歲)"
+              aria-label="旅客人數/成員"
+              className={inputClasses}
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <Home className="w-4 h-4 text-indigo-500" /> 住宿地點
+            </label>
+            <input
+              name="accommodation"
+              value={formData.accommodation}
+              onChange={handleChange}
+              placeholder="例如：住在京都車站附近"
+              aria-label="住宿地點"
+              className={inputClasses}
+            />
+          </div>
         </div>
 
         {/* Must Visit */}
@@ -152,11 +153,10 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
         <button
           type="submit"
           disabled={isLoading}
-          className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 ${
-            isLoading 
-              ? 'bg-slate-300 text-slate-500 cursor-not-allowed' 
-              : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-indigo-500/30'
-          }`}
+          className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 ${isLoading
+            ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+            : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-indigo-500/30'
+            }`}
         >
           {isLoading ? (
             <>
@@ -172,6 +172,16 @@ const JourneyForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
             </>
           )}
         </button>
+
+        <div className="pt-2 flex justify-center">
+          <button
+            type="button"
+            onClick={onLoadTest}
+            className="text-xs text-slate-400 hover:text-indigo-600 transition-colors flex items-center gap-1"
+          >
+            <Search className="w-3 h-3" /> 載入測試範本 (開發用)
+          </button>
+        </div>
       </form>
     </div>
   );

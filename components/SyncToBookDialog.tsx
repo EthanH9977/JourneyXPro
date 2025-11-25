@@ -9,6 +9,8 @@ interface Props {
   error?: string | null;
   successMessage?: string | null;
   defaultBookTitle?: string;
+  shikokuLink?: string | null;
+  onOpenShikoku?: () => void;
 }
 
 const SyncToBookDialog: React.FC<Props> = ({
@@ -18,7 +20,9 @@ const SyncToBookDialog: React.FC<Props> = ({
   isSubmitting,
   error,
   successMessage,
-  defaultBookTitle
+  defaultBookTitle,
+  shikokuLink,
+  onOpenShikoku
 }) => {
   const [username, setUsername] = useState('');
   const [bookTitle, setBookTitle] = useState('');
@@ -61,8 +65,17 @@ const SyncToBookDialog: React.FC<Props> = ({
         )}
 
         {successMessage && (
-          <div className="text-sm text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg p-3">
-            {successMessage}
+          <div className="flex flex-col gap-3 text-sm text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg p-3">
+            <span>{successMessage}</span>
+            {shikokuLink && (
+              <button
+                type="button"
+                onClick={onOpenShikoku}
+                className="self-start px-3 py-1.5 text-xs font-semibold rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+              >
+                開啟旅遊書
+              </button>
+            )}
           </div>
         )}
 

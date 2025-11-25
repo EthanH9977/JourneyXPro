@@ -5,6 +5,8 @@ import { tripPlanToTravelBook } from '../utils/tripPlanTransform';
 import { GroundingChunk, SavedTrip, TripDetails, TripPlan } from '../types';
 
 const STORAGE_KEY = 'journeyx_trips';
+const SHIKOKU_APP_URL =
+  import.meta.env.VITE_SHIKOKU_URL || 'https://shikoku.vercel.app';
 
 export const useTripPlanner = () => {
   const [currentTripDetails, setCurrentTripDetails] = useState<TripDetails | null>(null);
@@ -23,6 +25,7 @@ export const useTripPlanner = () => {
   const [syncLoading, setSyncLoading] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [syncSuccessMessage, setSyncSuccessMessage] = useState<string | null>(null);
+  const [lastSyncedLink, setLastSyncedLink] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -187,7 +190,12 @@ export const useTripPlanner = () => {
           plan: tripPlan,
           details: currentTripDetails
         });
+        const link = `${SHIKOKU_APP_URL}?user=${encodeURIComponent(
+          username
+        )}&file=${encodeURIComponent(result.fileId)}`;
+        setLastSyncedLink(link);
         setSyncSuccessMessage(`已同步：${username}/${result.fileName}`);
+        window.open(link, '_blank', 'noopener');
       } catch (err) {
         const message =
           err instanceof Error ? err.message : '同步失敗，請稍後再試。';
@@ -199,6 +207,12 @@ export const useTripPlanner = () => {
     [tripPlan, currentTripDetails]
   );
 
+  const openLastSyncedBook = useCallback(() => {
+    if (lastSyncedLink) {
+      window.open(lastSyncedLink, '_blank', 'noopener');
+    }
+  }, [lastSyncedLink]);
+
   return {
     currentTripDetails,
     tripPlan,
@@ -207,9 +221,6 @@ export const useTripPlanner = () => {
     adjustmentLoading,
     error,
     adjustmentError,
-    syncError,
-    syncLoading,
-    syncSuccessMessage,
     savedTrips,
     isHistoryOpen,
     isCurrentSaved,
@@ -227,7 +238,12 @@ export const useTripPlanner = () => {
     adjustTripPlan,
     openSyncDialog,
     closeSyncDialog,
-    syncTripPlanToBook
+    syncTripPlanToBook,
+    syncError,
+    syncSuccessMessage,
+    syncLoading,
+    lastSyncedLink,
+    openLastSyncedBook
   };
 };
 

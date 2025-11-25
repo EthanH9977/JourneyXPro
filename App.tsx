@@ -10,7 +10,6 @@ import { Plane, Map as MapIcon, Compass, History } from 'lucide-react';
 
 const App: React.FC = () => {
   const {
-    currentTripDetails,
     tripPlan,
     groundingChunks,
     loading,
@@ -25,6 +24,7 @@ const App: React.FC = () => {
     syncLoading,
     syncError,
     syncSuccessMessage,
+    lastSyncedLink,
     submitTrip,
     saveTrip,
     deleteTrip,
@@ -37,7 +37,8 @@ const App: React.FC = () => {
     adjustTripPlan,
     openSyncDialog,
     closeSyncDialog,
-    syncTripPlanToBook
+    syncTripPlanToBook,
+    openLastSyncedBook
   } = useTripPlanner();
 
   return (
@@ -159,6 +160,8 @@ const App: React.FC = () => {
         error={syncError}
         successMessage={syncSuccessMessage}
         defaultBookTitle={tripPlan?.tripTitle}
+        shikokuLink={lastSyncedLink}
+        onOpenShikoku={openLastSyncedBook}
       />
     </div>
   );

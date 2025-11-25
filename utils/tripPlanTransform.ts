@@ -51,6 +51,8 @@ const buildDetails = (activity: Activity) => {
 };
 
 export const tripPlanToTravelBook = (plan: TripPlan): TravelBookDay[] => {
+  const normalizedDestination = plan.destination?.trim() || '未命名地點';
+
   return plan.days.map((day) => {
     const events = day.activities.map((activity, index) => {
       const locationUrl = activity.location
@@ -73,9 +75,10 @@ export const tripPlanToTravelBook = (plan: TripPlan): TravelBookDay[] => {
       dayId: day.day,
       dateStr: day.date,
       displayDate: formatDisplayDate(day.date),
-      region: day.theme || plan.destination,
+      region: normalizedDestination,
       events
     };
   });
 };
+
 
